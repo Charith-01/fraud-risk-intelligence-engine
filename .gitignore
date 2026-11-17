@@ -244,3 +244,15 @@ data/processed/*
 # Operating system files
 .DS_Store
 Thumbs.db
+
+# Keep directory structure
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Generated model artifacts
+outputs/models/*
+!outputs/models/.gitkeep
+
+# Generated evaluation results
+outputs/metrics/*
+!outputs/metrics/.gitkeep
