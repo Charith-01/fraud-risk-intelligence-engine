@@ -221,3 +221,26 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Virtual environments
+.venv/
+venv/
+
+# Raw and processed datasets
+data/raw/*
+data/processed/*
+*.csv
+
+# Trained model artifacts
+*.joblib
+*.pkl
+
+# Environment variables
+.env
+
+# IDE configurations
+.vscode/
+
+# Operating system files
+.DS_Store
+Thumbs.db
