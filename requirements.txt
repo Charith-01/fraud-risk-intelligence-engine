@@ -1,0 +1,30 @@
+
+# Data manipulation
+numpy
+pandas
+scipy
+
+# Data visualization
+matplotlib
+seaborn
+
+# Machine learning
+scikit-learn
+imbalanced-learn
+xgboost
+
+# Explainable AI
+shap
+
+# Model serialization
+joblib
+
+# Notebook environment
+jupyter
+ipykernel
+
+# Report generation
+reportlab
+
+# Testing
+pytest
