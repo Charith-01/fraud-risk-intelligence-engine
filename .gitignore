@@ -256,3 +256,12 @@ outputs/models/*
 # Generated evaluation results
 outputs/metrics/*
 !outputs/metrics/.gitkeep
+
+# Final submission bundle
+submission/
+submission.zip
+
+# Python cache and test cache
+__pycache__/
+.pytest_cache/
+.ipynb_checkpoints/
