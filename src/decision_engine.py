@@ -11,6 +11,10 @@ from src.cost_analysis import (
     create_cost_matrix
 )
 
+from src.explainability import (
+    summarize_local_explanation
+)
+
 
 DECISION_NAMES = np.array([
     "Approve",
@@ -294,6 +298,88 @@ class FraudDecisionEngine:
                 X.isna().sum(axis=1).to_numpy()
             )
         }, index=transactions.index)
+
+    
+    def score_with_explanations(
+        self,
+        transactions,
+        explainer,
+        top_n=3
+    ):
+        """Score transactions and explain all flagged decisions."""
+
+        if not transactions.index.is_unique:
+            raise ValueError(
+                "Transaction row indexes must be unique."
+            )
+
+        scored = self.score_transactions(
+            transactions
+        )
+
+        X = self.validate_input(transactions)
+
+        scored["shap_baseline"] = np.nan
+
+        scored["risk_increasing_factors"] = (
+            "Not required"
+        )
+
+        scored["risk_decreasing_factors"] = (
+            "Not required"
+        )
+
+        high_risk_mask = (
+            scored["decision"] != "Approve"
+        )
+
+        flagged_X = X.loc[high_risk_mask]
+
+        if flagged_X.empty:
+
+            return scored, pd.DataFrame(
+                columns=X.columns
+            )
+
+        shap_values, baseline = explainer.explain(
+            flagged_X
+        )
+
+        np.testing.assert_allclose(
+            baseline + shap_values.sum(axis=1),
+
+            scored.loc[
+                high_risk_mask,
+                "fraud_probability"
+            ],
+
+            atol=1e-7
+        )
+
+        for index in flagged_X.index:
+
+            factors = summarize_local_explanation(
+                shap_values.loc[index],
+                flagged_X.loc[index],
+                top_n=top_n
+            )
+
+            scored.loc[
+                index,
+                "shap_baseline"
+            ] = baseline.loc[index]
+
+            scored.loc[
+                index,
+                "risk_increasing_factors"
+            ] = factors["risk_increasing_factors"]
+
+            scored.loc[
+                index,
+                "risk_decreasing_factors"
+            ] = factors["risk_decreasing_factors"]
+
+        return scored, shap_values
 
     def create_review_queue(self, scored):
         """Prioritize manual-review cases by fraud probability."""
